@@ -5,40 +5,54 @@ import requests
 # Initialize recognizer
 recognizer = sr.Recognizer()
 
-# Fetch products from DummyJSON API
+@st.cache_data
 def fetch_products():
     response = requests.get("https://dummyjson.com/products")
     data = response.json()
-    return data['products']  # Adjusted to extract the list of products
+    return data['products']
 
-# Filter products based on search query
 def search_products(products, query):
     if not query:
         return products
     return [product for product in products if query.lower() in product['title'].lower()]
 
-# Function to handle voice commands
 def handle_command(command, products):
-    if "add to cart" in command.lower():
+    command = command.lower()
+    if "add to cart" in command:
         response = "Item added to cart"
-    elif "search for" in command.lower():
-        search_query = command.lower().replace("search for", "").strip()
+    elif "search for" in command:
+        search_query = command.replace("search for", "").strip()
         filtered_products = search_products(products, search_query)
         if filtered_products:
             response = f"Found {len(filtered_products)} items for '{search_query}'"
+            # Update the search query for displaying filtered products
+            return response, search_query, filtered_products
         else:
             response = "No items found for your search"
+            return response, "", []
     else:
         response = "Sorry, I didn't understand that command."
-    return response
+        return response, "", []
 
 # Streamlit UI
 st.title("E-commerce Dashboard")
 
+# Fetch products
+products = fetch_products()
+
 # Search bar
 search_query = st.text_input("Search for products...")
 
-# Start recording button for voice command
+# Initialize search query and filtered products
+if 'search_query' not in st.session_state:
+    st.session_state.search_query = ""
+if 'filtered_products' not in st.session_state:
+    st.session_state.filtered_products = products
+
+# Display products based on current search query
+filtered_products = search_products(products, search_query)
+
+# Handle voice command
 if st.button("Start Recording"):
     with sr.Microphone() as source:
         st.write("Listening...")
@@ -47,28 +61,29 @@ if st.button("Start Recording"):
             text = recognizer.recognize_google(audio)
             st.write("You said: " + text)
             
-            # Fetch products for handling commands
-            products = fetch_products()
-
             # Handle command and generate response
-            response = handle_command(text, products)
+            response, new_search_query, new_filtered_products = handle_command(text, products)
             st.write("Assistant: " + response)
+            
+            # Update session state
+            st.session_state.search_query = new_search_query
+            st.session_state.filtered_products = new_filtered_products
         
         except sr.UnknownValueError:
             st.write("Could not understand the audio")
         except sr.RequestError:
             st.write("Could not request results from the speech recognition service")
 
-# Display products
+# Use session state for search query and filtered products
+search_query = st.session_state.search_query
+filtered_products = st.session_state.filtered_products
+
+# Display filtered products
 st.subheader("Product Listings")
-
-# Fetch and display products based on search query
-products = fetch_products()
-filtered_products = search_products(products, search_query)
-
 for product in filtered_products:
-    st.image(product['thumbnail'], width=150)  # Adjusted 'image' to 'thumbnail'
+    st.image(product['thumbnail'], width=150)
     st.write(f"**{product['title']}**")
     st.write(f"Price: ${product['price']}")
     st.write(product['description'])
-    st.button("Add to Cart", key=product['id'])
+    if st.button(f"Add to Cart - {product['id']}"):
+        st.write(f"{product['title']} added to cart!")
