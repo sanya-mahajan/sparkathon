@@ -80,7 +80,25 @@ if st.sidebar.button("Start Recording"):
             st.sidebar.write("Could not request results from the speech recognition service")
 
 # Search bar for manual input
-search_query = st.text_input("Search for products...", value=st.session_state.get('search_query', ''))
+search_query = st.text_input(
+    "Search for products...", 
+    value=st.session_state.get('search_query', ''),
+    help="Enter the product name to search",
+    max_chars=100,
+    placeholder="Search products...",
+    key='search_query'
+)
+
+# Custom CSS for search bar
+st.markdown(
+    """
+    <style>
+    .stTextInput input {
+        background-color: #e3f2fd; /* Light blue color */
+    }
+    </style>
+    """, unsafe_allow_html=True
+)
 
 # If the search query is updated, filter the products
 if search_query != st.session_state.get('search_query', ''):
@@ -94,26 +112,42 @@ else:
 # Use session state for filtered products
 filtered_products = st.session_state.filtered_products
 
-# Display filtered products with white boxes
+# Display filtered products with white boxes and image on the right
 st.subheader("Product Listings")
 for product in filtered_products:
     with st.container():
         st.markdown(
             f"""
-            <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 10px;">
-                <img src="{product['thumbnail']}" width="150">
-                <h3 style="margin: 0;">{product['title']}</h3>
-                <p>Price: ${product['price']}</p>
-                <p>{product['description']}</p>
+            <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 10px; display: flex; align-items: center;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0;">{product['title']}</h3>
+                    <p style="font-weight: bold; color: #333;">Price: ₹{product['price']}</p>
+                    <p>{product['description']}</p>
+                </div>
+                <img src="{product['thumbnail']}" width="200" style="border-radius: 5px;">
             </div>
             """, unsafe_allow_html=True
         )
-        if st.button(f"Add to Cart - {product['id']}"):
-            # Add product to cart in session state, including 'thumbnail'
-            st.session_state.cart.append({
-                'title': product['title'],
-                'price': product['price'],
-                'thumbnail': product.get('thumbnail', ''),  # Add 'thumbnail' to the cart
-                'quantity': 1  # Default to 1, can be updated later
-            })
-            st.write(f"{product['title']} added to cart!")
+        # Center-align the "Add to Cart" button below the product box
+        st.markdown(
+            f"""
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <button onclick="window.parent.postMessage({{
+                    type: 'ADD_TO_CART',
+                    productId: {product['id']}
+                }}, '*');" style="padding: 10px 20px; font-size: 16px; border: none; background-color: #FFC107; color: black; border-radius: 5px; cursor: pointer;">
+                    Add to Cart
+                </button>
+            </div>
+            """, unsafe_allow_html=True
+        )
+
+# Handling the cart logic
+st.write("Your Cart")
+if st.session_state.cart:
+    total_cost = sum(item['price'] * item['quantity'] for item in st.session_state.cart)
+    for item in st.session_state.cart:
+        st.write(f"{item['title']} - ₹{item['price']} x {item['quantity']}")
+    st.write(f"Total Cost: ₹{total_cost}")
+else:
+    st.write("Your cart is empty.")

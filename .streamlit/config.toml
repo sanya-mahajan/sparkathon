@@ -1,0 +1,8 @@
+[theme]
+base="light"
+primaryColor="#FFD700"  # Deep blue, Walmart's darker shade
+backgroundColor="#F9F9F9"  # Off-white background
+secondaryBackgroundColor="#005A9C"  # White for contrast in containers
+textColor="#333333"  # Dark gray text
+accentColor="#FFD700"  # Yellow for highlights and accents
+font="sans serif"
