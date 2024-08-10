@@ -11,17 +11,20 @@ engine = pyttsx3.init()
 if 'cart' not in st.session_state:
     st.session_state.cart = []
 
+# Function to fetch products
 @st.cache_data
 def fetch_products():
     response = requests.get("https://dummyjson.com/products")
     data = response.json()
     return data['products']
 
+# Function to search products based on a query
 def search_products(products, query):
     if not query:
         return products
     return [product for product in products if query.lower() in product['title'].lower()]
 
+# Function to handle voice commands
 def handle_command(command, products):
     command = command.lower()
     if "add to cart" in command:
@@ -39,6 +42,7 @@ def handle_command(command, products):
         response = "Sorry, I didn't understand that command."
         return response, "", []
 
+# Function to speak messages
 def speak_message(message):
     engine.say(message)
     engine.runAndWait()
@@ -75,17 +79,19 @@ if st.sidebar.button("Start Recording"):
         except sr.RequestError:
             st.sidebar.write("Could not request results from the speech recognition service")
 
-# Search bar
-search_query = st.text_input("Search for products...")
+# Search bar for manual input
+search_query = st.text_input("Search for products...", value=st.session_state.get('search_query', ''))
 
-# Initialize search query and filtered products
-if 'search_query' not in st.session_state:
-    st.session_state.search_query = ""
-if 'filtered_products' not in st.session_state:
-    st.session_state.filtered_products = products
+# If the search query is updated, filter the products
+if search_query != st.session_state.get('search_query', ''):
+    st.session_state.search_query = search_query
+    st.session_state.filtered_products = search_products(products, search_query)
+else:
+    # Initialize search query and filtered products if not set
+    if 'filtered_products' not in st.session_state:
+        st.session_state.filtered_products = products
 
-# Use session state for search query and filtered products
-search_query = st.session_state.search_query
+# Use session state for filtered products
 filtered_products = st.session_state.filtered_products
 
 # Display filtered products with white boxes
