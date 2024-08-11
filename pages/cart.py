@@ -12,13 +12,13 @@ if 'cart' not in st.session_state:
 
 # Function to calculate total cost
 def calculate_total(cart):
-    return sum(item['price'] * item['quantity'] for item in cart)
+    return round(sum(item['price'] * item['quantity'] for item in cart), 2)
 
 # Function to get cart details
 def get_cart_details(cart):
     if not cart:
         return "Your cart is empty."
-    details = [f"{item['title']}, Quantity: {item['quantity']}, Price: ${item['price']} each" for item in cart]
+    details = [f"{item['title']}, Quantity: {item['quantity']}, Price: ₹{item['price']} each" for item in cart]
     return " | ".join(details)
 
 # Voice assistant handling
@@ -27,7 +27,7 @@ def handle_cart_command(command, cart):
     if "cart details" in command:
         response = get_cart_details(cart)
     elif "total cost" in command:
-        response = f"The total cost is ${calculate_total(cart)}"
+        response = f"The total cost is ₹{calculate_total(cart)}"
     else:
         response = "Sorry, I didn't understand that command."
     return response
@@ -71,13 +71,13 @@ if st.session_state.cart:
                 <div style="background-color: white; padding: 15px; border-radius: 5px; margin-bottom: 10px;">
                     {'<img src="'+thumbnail+'" width="150">' if thumbnail else ''}
                     <h3 style="margin: 0;">{item['title']}</h3>
-                    <p>Price: ${item['price']}</p>
+                    <p>Price: ₹{item['price']}</p>
                     <p>Quantity: {item['quantity']}</p>
                 </div>
                 """, unsafe_allow_html=True
             )
     total_cost = calculate_total(st.session_state.cart)
-    st.write(f"**Total Cost: ${total_cost}**")
+    st.write(f"**Total Cost: ₹{total_cost}**")
     if st.button("Proceed to Payment"):
         st.write("Proceeding to payment options...")
 else:
