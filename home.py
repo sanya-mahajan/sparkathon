@@ -1,11 +1,10 @@
 import streamlit as st
 import speech_recognition as sr
 import requests
-import pyttsx3
+import subprocess
 
-# Initialize recognizer and text-to-speech engine
+# Initialize recognizer
 recognizer = sr.Recognizer()
-engine = pyttsx3.init()
 
 # Initialize cart in session state if not already initialized
 if 'cart' not in st.session_state:
@@ -28,7 +27,21 @@ def search_products(products, query):
 def handle_command(command, products):
     command = command.lower()
     if "add to cart" in command:
-        response = "Item added to cart"
+        product_name = command.replace("add to cart", "").strip()
+        for product in products:
+            if product_name.lower() in product['title'].lower():
+                st.session_state.cart.append({
+                    'id': product['id'],
+                    'title': product['title'],
+                    'price': product['price'],
+                    'quantity': 1,
+                    'thumbnail': product['thumbnail']
+                })
+                response = f"{product['title']} added to cart"
+                return response, "", products
+        response = "Product not found in the list."
+        return response, "", []
+    
     elif "search for" in command:
         search_query = command.replace("search for", "").strip()
         filtered_products = search_products(products, search_query)
@@ -42,10 +55,9 @@ def handle_command(command, products):
         response = "Sorry, I didn't understand that command."
         return response, "", []
 
-# Function to speak messages
+# Function to speak messages using external script
 def speak_message(message):
-    engine.say(message)
-    engine.runAndWait()
+    subprocess.run(["python", "tts_script.py", message])
 
 # Streamlit UI
 st.title("E-commerce Dashboard")
@@ -68,7 +80,9 @@ if st.sidebar.button("Start Recording"):
             # Handle command and generate response
             response, new_search_query, new_filtered_products = handle_command(text, products)
             st.sidebar.write("Assistant: " + response)
+            st.sidebar.write("Speaking...")
             speak_message(response)
+            st.sidebar.write("Done.")
             
             # Update session state
             st.session_state.search_query = new_search_query
@@ -153,13 +167,3 @@ for product in filtered_products:
                 'thumbnail': product['thumbnail']
             })
             st.success(f"Added {product['title']} to cart!")
-
-# Handling the cart logic
-st.write("Your Cart")
-if st.session_state.cart:
-    total_cost = sum(item['price'] * item['quantity'] for item in st.session_state.cart)
-    for item in st.session_state.cart:
-        st.write(f"{item['title']} - ₹{item['price']} x {item['quantity']}")
-    st.write(f"Total Cost: ₹{total_cost}")
-else:
-    st.write("Your cart is empty.")
