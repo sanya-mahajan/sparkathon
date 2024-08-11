@@ -24,23 +24,6 @@ def search_products(products, query):
         return products
     return [product for product in products if query.lower() in product['title'].lower()]
 
-# Function to add a product to the cart
-def add_to_cart(product):
-    # Check if the product is already in the cart
-    for item in st.session_state.cart:
-        if item['id'] == product['id']:
-            item['quantity'] += 1  # Increment quantity if already in cart
-            break
-    else:
-        # If the product is not in the cart, add it with quantity 1
-        st.session_state.cart.append({
-            'id': product['id'],
-            'title': product['title'],
-            'price': product['price'],
-            'quantity': 1,
-            'thumbnail': product['thumbnail']
-        })
-
 # Function to handle voice commands
 def handle_command(command, products):
     command = command.lower()
@@ -113,6 +96,20 @@ st.markdown(
     .stTextInput input {
         background-color: #e3f2fd; /* Light blue color */
     }
+    .add-to-cart-button {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .add-to-cart-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        background-color: #FFC107;
+        color: black;
+        border-radius: 5px;
+        cursor: pointer;
+    }
     </style>
     """, unsafe_allow_html=True
 )
@@ -146,16 +143,23 @@ for product in filtered_products:
             """, unsafe_allow_html=True
         )
         # Center-align the "Add to Cart" button below the product box
-        if st.button("Add to Cart", key=f"add_to_cart_{product['id']}"):
-            add_to_cart(product)
-            st.success(f"Added {product['title']} to cart")
+        if st.button(f"Add to Cart", key=f"add_to_cart_{product['id']}"):
+            # Add the product to the cart
+            st.session_state.cart.append({
+                'id': product['id'],
+                'title': product['title'],
+                'price': product['price'],
+                'quantity': 1,  # Set default quantity to 1
+                'thumbnail': product['thumbnail']
+            })
+            st.success(f"Added {product['title']} to cart!")
 
-# Display Cart Summary
-st.sidebar.subheader("Cart Summary")
+# Handling the cart logic
+st.write("Your Cart")
 if st.session_state.cart:
-    for item in st.session_state.cart:
-        st.sidebar.write(f"{item['title']} - ₹{item['price']} x {item['quantity']}")
     total_cost = sum(item['price'] * item['quantity'] for item in st.session_state.cart)
-    st.sidebar.write(f"Total Cost: ₹{total_cost}")
+    for item in st.session_state.cart:
+        st.write(f"{item['title']} - ₹{item['price']} x {item['quantity']}")
+    st.write(f"Total Cost: ₹{total_cost}")
 else:
-    st.sidebar.write("Your cart is empty.")
+    st.write("Your cart is empty.")
