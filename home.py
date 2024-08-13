@@ -1,5 +1,4 @@
 import streamlit as st
-import speech_recognition as sr
 import requests
 import cv2
 import threading
@@ -212,6 +211,32 @@ def video_stream():
 # Start video capture in a separate thread
 video_thread = threading.Thread(target=video_stream)
 video_thread.start()
+
+# Redeem Page
+def redeem_points_page():
+    st.subheader("Redeem Your Points")
+    st.write("Use your points to get amazing rewards!")
+    
+    # Dummy options with images
+    options = [
+        {"name": "10% Discount Coupon", "image": "https://via.placeholder.com/150", "description": "Get a 10% discount on your next purchase."},
+        {"name": "₹200 Cashback", "image": "https://via.placeholder.com/150", "description": "Redeem points for ₹200 cashback."},
+        {"name": "Free Shipping", "image": "https://via.placeholder.com/150", "description": "Enjoy free shipping on your next order."},
+        {"name": "Exclusive Access", "image": "https://via.placeholder.com/150", "description": "Get early access to our upcoming sale."},
+        {"name": "Gift Card", "image": "https://via.placeholder.com/150", "description": "Redeem points for a ₹500 gift card."},
+    ]
+    
+    for option in options:
+        with st.container():
+            st.image(option["image"], width=150)
+            st.write(f"### {option['name']}")
+            st.write(option["description"])
+            if st.button(f"Redeem {option['name']}"):
+                st.success(f"Redeemed {option['name']}")
+
+# Link the redeem page in the sidebar
+if st.sidebar.button("Redeem Points"):
+    redeem_points_page()
 
 # Search bar for manual input
 search_query = st.text_input(
