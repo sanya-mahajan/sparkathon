@@ -1,10 +1,17 @@
 import streamlit as st
+from PIL import Image
+import base64
+
+# Function to convert image to base64
+def get_image_base64(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
 
 # Sample data with carbon footprint and image URLs
 purchase_history = [
-    {"product": "Reusable Water Bottle", "points": 50, "carbon_footprint": 5.5, "date": "2024-01-15", "image_url": "images/bottle.jpg"},
+    {"product": "Reusable Water Bottle", "points": 50, "carbon_footprint": 5.5, "date": "2024-01-15", "image_url": "images/bottle.png"},
     {"product": "Eco-friendly Tote Bag", "points": 30, "carbon_footprint": 3.2, "date": "2024-02-20", "image_url": "images/tote.png"},
-    {"product": "Bamboo Toothbrush", "points": 20, "carbon_footprint": 2.1, "date": "2024-03-05", "image_url": "images/toothbrush.png"},
+    {"product": "Bamboo Toothbrush", "points": 20, "carbon_footprint": 2.1, "date": "2024-03-05", "image_url": "images/toothbrush.jpg"},
     {"product": "Solar Charger", "points": 100, "carbon_footprint": 8.7, "date": "2024-04-10", "image_url": "images/charger.png"},
     {"product": "Compostable Phone Case", "points": 40, "carbon_footprint": 4.3, "date": "2024-05-22", "image_url": "images/case.png"}
 ]
@@ -25,6 +32,9 @@ left_column, right_column = st.columns([2, 1])
 with left_column:
     st.markdown("## Purchase History")
     for item in purchase_history:
+        # Convert the image to base64
+        image_base64 = get_image_base64(item["image_url"])
+
         st.markdown(
             f"""
             <div style="background-color:white; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 15px; display: flex; justify-content: space-between;">
@@ -35,7 +45,7 @@ with left_column:
                     <strong>Date:</strong> {item['date']}
                 </div>
                 <div>
-                    <img src="{item['image_url']}" alt="{item['product']}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
+                    <img src="data:image/jpeg;base64,{image_base64}" alt="{item['product']}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;">
                 </div>
             </div>
             """, unsafe_allow_html=True
