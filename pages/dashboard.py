@@ -2,11 +2,11 @@ import streamlit as st
 
 # Sample data with carbon footprint and image URLs
 purchase_history = [
-    {"product": "Reusable Water Bottle", "points": 50, "carbon_footprint": 5.5, "date": "2024-01-15", "image_url": "images/toothbrush.jpg"},
-    {"product": "Eco-friendly Tote Bag", "points": 30, "carbon_footprint": 3.2, "date": "2024-02-20", "image_url": "https://example.com/tote_bag.png"},
-    {"product": "Bamboo Toothbrush", "points": 20, "carbon_footprint": 2.1, "date": "2024-03-05", "image_url": "https://example.com/toothbrush.png"},
-    {"product": "Solar Charger", "points": 100, "carbon_footprint": 8.7, "date": "2024-04-10", "image_url": "https://example.com/solar_charger.png"},
-    {"product": "Compostable Phone Case", "points": 40, "carbon_footprint": 4.3, "date": "2024-05-22", "image_url": "https://example.com/phone_case.png"}
+    {"product": "Reusable Water Bottle", "points": 50, "carbon_footprint": 5.5, "date": "2024-01-15", "image_url": "images/bottle.jpg"},
+    {"product": "Eco-friendly Tote Bag", "points": 30, "carbon_footprint": 3.2, "date": "2024-02-20", "image_url": "images/tote.png"},
+    {"product": "Bamboo Toothbrush", "points": 20, "carbon_footprint": 2.1, "date": "2024-03-05", "image_url": "images/toothbrush.png"},
+    {"product": "Solar Charger", "points": 100, "carbon_footprint": 8.7, "date": "2024-04-10", "image_url": "images/charger.png"},
+    {"product": "Compostable Phone Case", "points": 40, "carbon_footprint": 4.3, "date": "2024-05-22", "image_url": "images/case.png"}
 ]
 
 # Calculate total points
