@@ -3,6 +3,7 @@ import requests
 import cv2
 import threading
 import mediapipe as mp
+import speech_recognition as sr
 import math
 from PIL import Image
 
