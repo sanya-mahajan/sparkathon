@@ -106,10 +106,13 @@ products = fetch_products()
 # Sidebar for voice and video capture
 st.sidebar.title("Voice Assistant")
 
-# Handle voice command
-# Initialize the recording status in session state if not already initialized
+# Handle voice command# Initialize the recording status in session state if not already initialized
 if 'is_recording_voice' not in st.session_state:
     st.session_state.is_recording_voice = False
+
+# Initialize the assistant response in session state if not already initialized
+if 'assistant_response' not in st.session_state:
+    st.session_state.assistant_response = ""
 
 # Toggle button for voice recording
 if st.sidebar.button("Start Recording" if not st.session_state.is_recording_voice else "Stop Recording"):
@@ -126,19 +129,22 @@ if st.sidebar.button("Start Recording" if not st.session_state.is_recording_voic
                 
                 # Handle command and generate response
                 response, new_search_query, new_filtered_products = handle_command(text, products)
-                st.sidebar.write("Assistant: " + response)
+                st.session_state.assistant_response = response  # Store the response in session state
                 
                 # Update session state
                 st.session_state.search_query = new_search_query
                 st.session_state.filtered_products = new_filtered_products
             
             except sr.UnknownValueError:
-                st.sidebar.write("Could not understand the audio")
+                st.session_state.assistant_response = "Could not understand the audio"
             except sr.RequestError:
-                st.sidebar.write("Could not request results from the speech recognition service")
+                st.session_state.assistant_response = "Could not request results from the speech recognition service"
     else:
         st.sidebar.write("Recording stopped.")
 
+# Display the assistant's response
+if st.session_state.assistant_response:
+    st.sidebar.write(f"Assistant: {st.session_state.assistant_response}")
 
 # Video capture in the sidebar
 st.sidebar.subheader("Video Capture for Sign Language")

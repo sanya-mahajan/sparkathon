@@ -1,10 +1,8 @@
 import streamlit as st
 import speech_recognition as sr
-import pyttsx3
 
-# Initialize recognizer and text-to-speech engine
+# Initialize recognizer
 recognizer = sr.Recognizer()
-engine = pyttsx3.init()
 
 # Initialize cart in session state if not already initialized
 if 'cart' not in st.session_state:
@@ -32,10 +30,6 @@ def handle_cart_command(command, cart):
         response = "Sorry, I didn't understand that command."
     return response
 
-def speak_message(message):
-    engine.say(message)
-    engine.runAndWait()
-
 # Cart Page UI
 st.title("Your Shopping Cart")
 
@@ -53,7 +47,6 @@ if st.sidebar.button("Start Recording"):
             # Handle cart command and generate response
             response = handle_cart_command(text, st.session_state.cart)
             st.sidebar.write("Assistant: " + response)
-            speak_message(response)
         
         except sr.UnknownValueError:
             st.sidebar.write("Could not understand the audio")
