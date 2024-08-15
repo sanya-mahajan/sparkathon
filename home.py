@@ -32,9 +32,30 @@ def search_products(products, query):
         return products
     return [product for product in products if query.lower() in product['title'].lower()]
 
+
+
+# Function to capture video frames continuously
+def video_stream():
+    cap = cv2.VideoCapture(0)
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        video_placeholder.image(frame_rgb)
+        
+        # Implement sign language recognition processing here
+
+        if st.sidebar.button("Stop Video"):
+            break
+
+    cap.release()
+
 # Function to handle voice commands
 def handle_command(command, products):
     command = command.lower()
+    
+    # Add to Cart Command
     if "add to cart" in command:
         product_name = command.replace("add to cart", "").strip()
         for product in products:
@@ -51,6 +72,7 @@ def handle_command(command, products):
         response = "Product not found in the list."
         return response, "", []
     
+    # Search Command
     elif "search for" in command:
         search_query = command.replace("search for", "").strip()
         filtered_products = search_products(products, search_query)
@@ -60,6 +82,17 @@ def handle_command(command, products):
         else:
             response = "No items found for your search"
             return response, "", []
+
+    # Check Points Command
+    elif "check my points" in command:
+        st.switch_page("pages/dashboard.py")
+
+    # Redeem Points Command
+    elif "redeem points" in command:
+        st.sidebar.write("Opening the redeem points page...")
+        st.switch_page("pages/redeem.py")
+        return "Redeem points page opened.", "", products
+
     else:
         response = "Sorry, I didn't understand that command."
         return response, "", []
@@ -71,29 +104,41 @@ st.title("E-commerce Dashboard")
 products = fetch_products()
 
 # Sidebar for voice and video capture
-st.sidebar.title("Voice & Sign Language Assistant")
+st.sidebar.title("Voice Assistant")
 
 # Handle voice command
-if st.sidebar.button("Start Recording"):
-    with sr.Microphone() as source:
-        st.sidebar.write("Listening...")
-        audio = recognizer.listen(source)
-        try:
-            text = recognizer.recognize_google(audio)
-            st.sidebar.write("You said: " + text)
+# Initialize the recording status in session state if not already initialized
+if 'is_recording_voice' not in st.session_state:
+    st.session_state.is_recording_voice = False
+
+# Toggle button for voice recording
+if st.sidebar.button("Start Recording" if not st.session_state.is_recording_voice else "Stop Recording"):
+    st.session_state.is_recording_voice = not st.session_state.is_recording_voice
+
+    if st.session_state.is_recording_voice:
+        # Handle voice recording start logic
+        with sr.Microphone() as source:
+            st.sidebar.write("Listening...")
+            audio = recognizer.listen(source)
+            try:
+                text = recognizer.recognize_google(audio)
+                st.sidebar.write("You said: " + text)
+                
+                # Handle command and generate response
+                response, new_search_query, new_filtered_products = handle_command(text, products)
+                st.sidebar.write("Assistant: " + response)
+                
+                # Update session state
+                st.session_state.search_query = new_search_query
+                st.session_state.filtered_products = new_filtered_products
             
-            # Handle command and generate response
-            response, new_search_query, new_filtered_products = handle_command(text, products)
-            st.sidebar.write("Assistant: " + response)
-            
-            # Update session state
-            st.session_state.search_query = new_search_query
-            st.session_state.filtered_products = new_filtered_products
-        
-        except sr.UnknownValueError:
-            st.sidebar.write("Could not understand the audio")
-        except sr.RequestError:
-            st.sidebar.write("Could not request results from the speech recognition service")
+            except sr.UnknownValueError:
+                st.sidebar.write("Could not understand the audio")
+            except sr.RequestError:
+                st.sidebar.write("Could not request results from the speech recognition service")
+    else:
+        st.sidebar.write("Recording stopped.")
+
 
 # Video capture in the sidebar
 st.sidebar.subheader("Video Capture for Sign Language")
@@ -170,6 +215,13 @@ def run():
             gesture_placeholder.write(f'Gesture: {gesture}')
 
             if gesture == "Okay":
+                # st.session_state.cart.append({
+                #     'id': product['id'],
+                #     'title': product['title'],
+                #     'price': product['price'],
+                #     'quantity': 1,
+                #     'thumbnail': product['thumbnail']
+                # })
                 st.sidebar.success("Item added to cart")
             elif gesture == "Victory":
                 st.sidebar.write("Victory gesture detected!")
@@ -190,6 +242,7 @@ def run():
     cap.release()
 
 # Run the Streamlit app with camera feed in the sidebar
+
 if st.sidebar.button('Start'):
     run()
 # Function to capture video frames continuously
@@ -213,31 +266,6 @@ def video_stream():
 video_thread = threading.Thread(target=video_stream)
 video_thread.start()
 
-# Redeem Page
-def redeem_points_page():
-    st.subheader("Redeem Your Points")
-    st.write("Use your points to get amazing rewards!")
-    
-    # Dummy options with images
-    options = [
-        {"name": "10% Discount Coupon", "image": "https://via.placeholder.com/150", "description": "Get a 10% discount on your next purchase."},
-        {"name": "₹200 Cashback", "image": "https://via.placeholder.com/150", "description": "Redeem points for ₹200 cashback."},
-        {"name": "Free Shipping", "image": "https://via.placeholder.com/150", "description": "Enjoy free shipping on your next order."},
-        {"name": "Exclusive Access", "image": "https://via.placeholder.com/150", "description": "Get early access to our upcoming sale."},
-        {"name": "Gift Card", "image": "https://via.placeholder.com/150", "description": "Redeem points for a ₹500 gift card."},
-    ]
-    
-    for option in options:
-        with st.container():
-            st.image(option["image"], width=150)
-            st.write(f"### {option['name']}")
-            st.write(option["description"])
-            if st.button(f"Redeem {option['name']}"):
-                st.success(f"Redeemed {option['name']}")
-
-# Link the redeem page in the sidebar
-if st.sidebar.button("Redeem Points"):
-    redeem_points_page()
 
 # Search bar for manual input
 search_query = st.text_input(
