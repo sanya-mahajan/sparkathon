@@ -71,6 +71,11 @@ def handle_command(command, products):
                 return response, "", products
         response = "Product not found in the list."
         return response, "", []
+        
+
+    # see cart
+    if "open cart" or "view cart" in command:
+        st.switch_page("pages/cart.py")    
     
     # Search Command
     elif "search for" in command:
