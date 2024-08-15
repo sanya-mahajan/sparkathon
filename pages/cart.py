@@ -19,13 +19,25 @@ def get_cart_details(cart):
     details = [f"{item['title']}, Quantity: {item['quantity']}, Price: ₹{item['price']} each" for item in cart]
     return " | ".join(details)
 
-# Voice assistant handling
+# Function to handle cart commands
 def handle_cart_command(command, cart):
     command = command.lower()
     if "cart details" in command:
         response = get_cart_details(cart)
     elif "total cost" in command:
         response = f"The total cost is ₹{calculate_total(cart):.2f}"
+    elif "remove" in command:
+        item_name = command.replace("remove", "").strip()
+        removed_item = None
+        for item in cart:
+            if item_name.lower() in item['title'].lower():
+                removed_item = item
+                cart.remove(item)
+                break
+        if removed_item:
+            response = f"Removed {removed_item['title']} from your cart."
+        else:
+            response = f"Item {item_name} not found in your cart."
     else:
         response = "Sorry, I didn't understand that command."
     return response
