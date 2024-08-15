@@ -1,9 +1,3 @@
-'''
-This program is written by Muhammad Rafay (2021-MC-39) as a Semester project of CP-II.
-This program resolves the sign language gestures using AI.
-Submitted to: Dr Muhammad Ahsan Naeem 
-Date: 11 May,2023.
-'''
 
 import mediapipe as mp
 import cv2, math, datetime, pyttsx3
