@@ -1,111 +1,125 @@
 import streamlit as st
 
 # Title of the page
-st.title("User Guidelines for [Your E-commerce Platform]")
+st.title("User Guidelines for WalSmart")
 
 # Introduction
 st.markdown("""
-Welcome to WallSmart, an inclusive shopping experience designed to be accessible to everyone. Follow these guidelines to make the most of the voice and sign language features, and explore the other functionalities available on our website.
+Welcome to WalSmart, an inclusive shopping experience designed to be accessible to everyone. Follow these guidelines to make the most of the voice and sign language features, and explore the other functionalities available on our website.
 """)
 
 # Voice-Based Features
-st.header("1. How to Use Voice-Based Features")
+st.header("1. How to Use Voice Commands")
 
-st.subheader("1.1. Searching for Products")
+st.subheader("a. Adding Products to Your Cart")
 st.markdown("""
-- **Activate Voice Search**: To search for a product, simply say **"search"** followed by the product name.
-  - **Example**: Say "Search red shoes" to find all red shoes available on our platform.
-- **Tips**: Speak clearly and ensure there’s minimal background noise for accurate results.
+- **Command**: "Add to cart [product name]"
+  - **How it works**: Simply say "Add to cart [product name]," and the system will add the matching product to your cart.
+  - **Example**: "Add to cart red shoes" will add the product named "Red Shoes" to your cart if it exists.
+  - **Confirmation**: The system will confirm with a message like "Red Shoes added to cart."
+  - **If Not Found**: If the product isn't found, you'll hear "Product not found in the list."
 """)
 
-st.subheader("1.2. Adding Products to Your Cart via Voice")
+st.subheader("b. Viewing Your Cart")
 st.markdown("""
-- After finding the product you want, say **"Add [Product name] to cart."**
-  - **Example**: Say "Add mascara to cart" to add the specific item to your cart.
-- **Confirmation**: You will hear a confirmation message, such as "[Product Name] has been added to your cart."
+- **Command**: "Open cart" or "View cart"
+  - **How it works**: Say "Open cart" or "View cart" to navigate directly to your cart page.
+  - **What you’ll see**: The system will display all the items currently in your cart, including product details and total cost.
 """)
 
-st.subheader("1.3. Managing Your Cart")
+st.subheader("c. Searching for Products")
 st.markdown("""
-- **View Cart**: To check the items in your cart, say "Open cart."
-- **Remove Items**: Say "Remove [Product name] from cart" to delete an item.
+- **Command**: "Search for [product name]"
+  - **How it works**: To search for a product, say "Search for [product name]."
+  - **Example**: "Search for blue jeans" will return all available blue jeans.
+  - **Search Results**: The system will provide a message like "Found 3 items for 'blue jeans'" if the search is successful.
+  - **No Results**: If no products match your search, the system will respond with "No items found for your search."
 """)
 
-st.subheader("1.4. Navigation between pages")
+st.subheader("d. Checking Your Points")
 st.markdown("""
-- **View Cart**: To go to a particular page. Use the button on the left- Start Recording and say the [Page Name]."
+- **Command**: "Check my points"
+  - **How it works**: Saying "Check my points" will redirect you to your dashboard, where you can view your points balance.
+  - **What you’ll see**: You'll be able to view regular points and points earned from purchasing eco-friendly products.
+""")
 
+st.subheader("e. Redeeming Your Points")
+st.markdown("""
+- **Command**: "Redeem points"
+  - **How it works**: Say "Redeem points" to go to the page where you can use your points for discounts or special offers.
+  - **What happens**: The system will display a message, "Redeem points page opened," and you’ll be redirected to the appropriate page.
+""")
+
+st.subheader("f. Error Handling")
+st.markdown("""
+- **Unrecognized Command**: If the system doesn't understand your command, it will respond with "Sorry, I didn't understand that command."
+  - **Tip**: Ensure your command is clear and follows the specified format.
+""")
+
+# Website Navigation
+st.header("2. Navigating the Website")
+
+st.subheader("a. Home Page")
+st.markdown("""
+- **Access**: Begin your shopping journey by exploring featured products, new arrivals, and special offers. You can also access your account, orders, and settings from the Home Page.
+""")
+
+st.subheader("b. Product Categories")
+st.markdown("""
+- **Browse**: Navigate through different product categories by clicking on the relevant tabs or using the search function.
+  - **Example**: "Search for electronics" will display all electronic products available.
+""")
+
+st.subheader("c. Cart")
+st.markdown("""
+- **Manage Cart**: Use the "Open cart" or "View cart" commands to manage items in your cart, apply discounts, and proceed to checkout.
+""")
+
+st.subheader("d. Redeem Your Points")
+st.markdown("""
+- **Command**: "Redeem points"
+  - **How it works**: Say "Redeem points" to go to the page where you can use your points for discounts or special offers.
+  - **What happens**: The system will display a message, "Redeem points page opened," and you’ll be redirected to the appropriate page.
 """)
 
 # Sign Language Features
-st.header("2. How to Use Sign Language Features")
+st.header("3. How to Use Sign Language Features")
 
-st.subheader("2.1. Adding Products to Your Cart Using Gestures")
+st.subheader("a. Adding Products to Your Cart Using Gestures")
 st.markdown("""
-- **Identify Product**: First, ensure the product ID is visible or known to you and use product ID in sign language to dispay a particular product
+- **Identify Product**: First, ensure the product ID is visible or known to you and use product ID in sign language to display a particular product.
 - **Victory/Okay Sign**: Hold up the victory (V) or okay sign while the product is displayed to add the product to your cart.
   - **Example**: Show the okay sign after displaying the product, and the system will add the item to your cart.
 - **Visual Confirmation**: You will see a message on the screen confirming that the product has been added to your cart.
 """)
 
-st.subheader("2.2. Gesture Tips")
+st.subheader("b. Gesture Tips")
 st.markdown("""
 - Make sure your hand gesture is clear and within the camera's view.
 - If the gesture is not recognized, a message will prompt you to try again.
 """)
 
 # Rewards Page
-st.header("3. Rewards Page")
+st.header("4. Rewards Page")
 
-st.subheader("3.1. Earning Points")
+st.subheader("a. Earning Points")
 st.markdown("""
-- **Navigation**: Use voice capabilities to go to the page by saying out the page name. Eg. Redeem Points
-- **Eco-Friendly Points**: Earn points on every purchase.Earn additional points by purchasing products with a lower carbon footprint.
+- **Navigation**: Use voice capabilities to go to the page by saying out the page name. Eg. Redeem Points.
+- **Eco-Friendly Points**: Earn points on every purchase. Earn additional points by purchasing products with a lower carbon footprint.
 - **View Your Points**: Visit the Rewards Page to check your current point balance.
 """)
 
-st.subheader("3.2. Redeeming Points")
+st.subheader("b. Redeeming Points")
 st.markdown("""
 - Use your points for discounts or special offers. The Rewards Page will guide you on how to redeem them.
 """)
 
-# Other Pages and Functionalities
-st.header("4. Other Pages and Functionalities")
 
-st.subheader("4.1. Home Page")
-st.markdown("""
-- Browse featured products, new arrivals, and special offers.
-- Access your account, orders, and settings from the Home Page.
-""")
-
-st.subheader("4.2. Product Categories")
-st.markdown("""
-- Explore different product categories by clicking on the relevant tabs or using voice commands.
-  - **Example**: Say "Search electronics" to view all electronic products.
-""")
-
-st.subheader("4.3. Cart")
-st.markdown("""
-- Manage the items in your cart, apply discounts, and proceed to checkout.
-- Accessible via the "Cart" button on the top right of the screen or by saying "View cart."
-""")
-
-st.subheader("4.4. Checkout")
-st.markdown("""
-- Review your items, enter payment details, and complete your purchase.
-- In the future, you’ll be able to make payments using voice commands or sign language gestures.
-""")
-
-st.subheader("4.5. Help & Support")
-st.markdown("""
-- Visit our Help & Support page for FAQs, contact information, and assistance.
-- Available through the "Help" button or by saying "Help."
-""")
 
 # Future Enhancements
 st.header("5. Future Enhancements")
 
-st.subheader("5.1. Voice and Sign Language Payments")
+st.subheader("a. Voice and Sign Language Payments")
 st.markdown("""
 - Soon, you’ll be able to complete purchases using your voice or sign language. Stay tuned for updates!
 """)
