@@ -32,32 +32,15 @@ def search_products(products, query):
         return products
     return [product for product in products if query.lower() in product['title'].lower()]
 
-
-
-# Function to capture video frames continuously
-def video_stream():
-    cap = cv2.VideoCapture(0)
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        video_placeholder.image(frame_rgb)
-        
-        # Implement sign language recognition processing here
-
-        if st.sidebar.button("Stop Video"):
-            break
-
-    cap.release()
-
 # Function to handle voice commands
 def handle_command(command, products):
     command = command.lower()
 
-    if "guidebook" or "guide book" in command:
+    # Navigate to Guidebook
+    if "guidebook" in command or "guide book" in command:
         st.switch_page("pages/guidebook.py")
-    
+        return "Opening the guidebook...", "", products
+
     # Add to Cart Command
     if "add to cart" in command:
         product_name = command.replace("add to cart", "").strip()
@@ -70,51 +53,53 @@ def handle_command(command, products):
                     'quantity': 1,
                     'thumbnail': product['thumbnail']
                 })
-                response = f"{product['title']} added to cart"
-                return response, "", products
-        response = "Product not found in the list."
-        return response, "", []
-        
+                return f"{product['title']} added to cart", "", products
+        return "Product not found in the list.", "", []
 
-    # see cart
-    if "open cart" or "view cart" in command:
-        st.switch_page("pages/cart.py")    
-    
+    # View Cart
+    if "open cart" in command or "view cart" in command:
+        st.switch_page("pages/cart.py")
+        return "Opening your cart...", "", products
+
     # Search Command
-    elif "search for" in command:
+    if "search for" in command:
         search_query = command.replace("search for", "").strip()
         filtered_products = search_products(products, search_query)
         if filtered_products:
-            response = f"Found {len(filtered_products)} items for '{search_query}'"
-            return response, search_query, filtered_products
+            return f"Found {len(filtered_products)} items for '{search_query}'", search_query, filtered_products
         else:
-            response = "No items found for your search"
-            return response, "", []
+            return "No items found for your search", "", []
 
     # Check Points Command
-    elif "check my points" in command:
+    if "check my points" in command:
         st.switch_page("pages/dashboard.py")
+        return "Opening your dashboard...", "", products
 
     # Redeem Points Command
-    elif "redeem points" in command:
-        st.sidebar.write("Opening the redeem points page...")
+    if "redeem points" in command:
         st.switch_page("pages/redeem.py")
         return "Redeem points page opened.", "", products
 
-    else:
-        response = "Sorry, I didn't understand that command."
-        return response, "", []
+    # Unknown Command
+    return "Sorry, I didn't understand that command.", "", []
 
 # Streamlit UI
-st.title("E-commerce Dashboard")
+st.title("WalSmart Dashboard")
 
 # Fetch products
 products = fetch_products()
+
 # Sidebar for voice and video capture
 st.sidebar.title("Voice Assistant")
 
-# Handle voice command
+# Reset session state variables before starting a new recording
 if st.sidebar.button("Start Recording"):
+    # Reset session state variables
+    st.session_state.search_query = ""
+    st.session_state.filtered_products = products  # reset to all products
+    st.session_state.assistant_response = ""
+
+    # Start recording
     with sr.Microphone() as source:
         st.sidebar.write("Listening...")
         audio = recognizer.listen(source)
@@ -124,7 +109,7 @@ if st.sidebar.button("Start Recording"):
             
             # Handle command and generate response
             response, new_search_query, new_filtered_products = handle_command(text, products)
-            st.sidebar.write("Assistant: " + response)
+            st.session_state.assistant_response = response  # Store the response in session state
             
             # Update session state
             st.session_state.search_query = new_search_query
@@ -135,6 +120,9 @@ if st.sidebar.button("Start Recording"):
         except sr.RequestError:
             st.sidebar.write("Could not request results from the speech recognition service")
 
+# Display the assistant's response
+if 'assistant_response' in st.session_state and st.session_state.assistant_response:
+    st.sidebar.write(f"Assistant: {st.session_state.assistant_response}")
 
 # Video capture in the sidebar
 st.sidebar.subheader("Video Capture for Sign Language")
@@ -211,13 +199,6 @@ def run():
             gesture_placeholder.write(f'Gesture: {gesture}')
 
             if gesture == "Okay":
-                # st.session_state.cart.append({
-                #     'id': product['id'],
-                #     'title': product['title'],
-                #     'price': product['price'],
-                #     'quantity': 1,
-                #     'thumbnail': product['thumbnail']
-                # })
                 st.sidebar.success("Item added to cart")
             elif gesture == "Victory":
                 st.sidebar.write("Victory gesture detected!")
@@ -241,6 +222,7 @@ def run():
 
 if st.sidebar.button('Start'):
     run()
+
 # Function to capture video frames continuously
 def video_stream():
     cap = cv2.VideoCapture(0)
@@ -249,18 +231,10 @@ def video_stream():
         if not ret:
             break
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        video_placeholder.image(frame_rgb)
-        
-        # Implement sign language recognition processing here
-
-        if st.sidebar.button("Stop Video"):
-            break
+        img = Image.fromarray(frame_rgb)
+        video_placeholder.image(img, caption='Capturing video...', use_column_width=True)
 
     cap.release()
-
-# Start video capture in a separate thread
-video_thread = threading.Thread(target=video_stream)
-video_thread.start()
 
 
 # Search bar for manual input
@@ -312,3 +286,13 @@ for product in filtered_products:
                 'thumbnail': product['thumbnail']
             })
             st.success(f"Added {product['title']} to cart!")
+
+# Display the contents of the cart
+st.sidebar.title("Your Cart")
+if st.session_state.cart:
+    for item in st.session_state.cart:
+        st.sidebar.write(f"**{item['title']}** - ${item['price']} x {item['quantity']}")
+        st.sidebar.image(item['thumbnail'], width=50)
+else:
+    st.sidebar.write("Your cart is empty.")
+
