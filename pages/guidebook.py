@@ -73,6 +73,8 @@ st.markdown("""
 st.subheader("c. Cart")
 st.markdown("""
 - **Manage Cart**: Use the "Open cart" or "View cart" commands to manage items in your cart, apply discounts, and proceed to checkout.
+- **See Total Points**: Say "Total Points" in the cart 
+- **Remove Item from cart**: Say "remove [Item Name] in cart.
 """)
 
 st.subheader("d. Redeem Your Points")
