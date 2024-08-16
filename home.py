@@ -54,6 +54,9 @@ def video_stream():
 # Function to handle voice commands
 def handle_command(command, products):
     command = command.lower()
+
+    if "guidebook" or "guide book" in command:
+        st.switch_page("pages/guidebook.py")
     
     # Add to Cart Command
     if "add to cart" in command:
@@ -107,49 +110,31 @@ st.title("E-commerce Dashboard")
 
 # Fetch products
 products = fetch_products()
-
 # Sidebar for voice and video capture
 st.sidebar.title("Voice Assistant")
 
-# Handle voice command# Initialize the recording status in session state if not already initialized
-if 'is_recording_voice' not in st.session_state:
-    st.session_state.is_recording_voice = False
-
-# Initialize the assistant response in session state if not already initialized
-if 'assistant_response' not in st.session_state:
-    st.session_state.assistant_response = ""
-
-# Toggle button for voice recording
-if st.sidebar.button("Start Recording" if not st.session_state.is_recording_voice else "Stop Recording"):
-    st.session_state.is_recording_voice = not st.session_state.is_recording_voice
-
-    if st.session_state.is_recording_voice:
-        # Handle voice recording start logic
-        with sr.Microphone() as source:
-            st.sidebar.write("Listening...")
-            audio = recognizer.listen(source)
-            try:
-                text = recognizer.recognize_google(audio)
-                st.sidebar.write("You said: " + text)
-                
-                # Handle command and generate response
-                response, new_search_query, new_filtered_products = handle_command(text, products)
-                st.session_state.assistant_response = response  # Store the response in session state
-                
-                # Update session state
-                st.session_state.search_query = new_search_query
-                st.session_state.filtered_products = new_filtered_products
+# Handle voice command
+if st.sidebar.button("Start Recording"):
+    with sr.Microphone() as source:
+        st.sidebar.write("Listening...")
+        audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            st.sidebar.write("You said: " + text)
             
-            except sr.UnknownValueError:
-                st.session_state.assistant_response = "Could not understand the audio"
-            except sr.RequestError:
-                st.session_state.assistant_response = "Could not request results from the speech recognition service"
-    else:
-        st.sidebar.write("Recording stopped.")
+            # Handle command and generate response
+            response, new_search_query, new_filtered_products = handle_command(text, products)
+            st.sidebar.write("Assistant: " + response)
+            
+            # Update session state
+            st.session_state.search_query = new_search_query
+            st.session_state.filtered_products = new_filtered_products
+        
+        except sr.UnknownValueError:
+            st.sidebar.write("Could not understand the audio")
+        except sr.RequestError:
+            st.sidebar.write("Could not request results from the speech recognition service")
 
-# Display the assistant's response
-if st.session_state.assistant_response:
-    st.sidebar.write(f"Assistant: {st.session_state.assistant_response}")
 
 # Video capture in the sidebar
 st.sidebar.subheader("Video Capture for Sign Language")
